@@ -19,6 +19,8 @@ public class Board {
 	
 	// each board location stores a value 0-8 for how many MINEs are around it
 	private int[][] board;
+	// each board location is either UNKNOWN, KNOWN, a revealed MINE, or you're DEAD
+	private SquareState[][] state;
 	// Any board will have a set number of MINEs related to the difficulty of the game
 	private int numMines;
 	// A random number generator rgn is used to place MINEs in random locations
@@ -29,25 +31,40 @@ public class Board {
 	 */
 	public Board() {
 		this.board = new int[DEFAULT_BOARD_HEIGHT][DEFAULT_BOARD_WIDTH];
+		this.state = new SquareState[DEFAULT_BOARD_HEIGHT][DEFAULT_BOARD_WIDTH];
 		this.rgn = new Random();
 		this.numMines = DEFAULT_NUM_MINES;
 		
+		this.initializeSquareStates();
 		this.placeMines();
 		this.fillNumbers();
 	}
 	
 	public Board(int height, int width, int numMines) {
 		this.board = new int[height][width];
+		this.state = new SquareState[height][width];
 		this.rgn = new Random();
 		this.numMines = numMines;
 		
+		this.initializeSquareStates();
 		this.placeMines();
 		this.fillNumbers();
 	}
 	
+	/** initializeSquareStates - sets all values in the state[][] array 
+	 *  to SquareState.UNKNOWN
+	 */
+	private void initializeSquareStates() {
+		for (int row = 0; row < state.length; row++) {
+			for (int col = 0; col < state[row].length; col++) {
+				state[row][col] = SquareState.UNKNOWN;
+			}
+		}
+	}
+	
 	/** placeMines - places numMines MINEs on the board. */
 	private void placeMines() {
-		assert (numMines <= board.length * board[0].length);
+		assert numMines <= board.length * board[0].length;
 		int i = 0;
 		while (i < numMines) {
 			int boardRowIndexMineQuery = rgn.nextInt(board.length);
@@ -107,6 +124,15 @@ public class Board {
 		return sumSurroundingMines;
 	}
 	
+	/** revealBoard - sets all squares to being visible using the state[][] array. */
+	public void revealBoard() {
+		for (int row = 0; row < state.length; row++) {
+			for (int col = 0; col < state[row].length; col++) {
+				state[row][col] = SquareState.KNOWN;
+			}
+		}
+	}
+	
 	/** toString - creates a visual representation of a  Minesweeper Board.
 	 * 
 	 * @return the Board in String form
@@ -129,11 +155,19 @@ public class Board {
 		for (int i = 0; i < board.length; i++) {
 			stringRep += "| ";
 			for (int j = 0; j < board[i].length; j++) {
-				// squares bordering no MINEs will be represented as spaces
-				if (board[i][j] == 0) stringRep += "  ";
-				// squares that are MINEs will be represented as asterisks *
-				else if (board[i][j] == MINE) stringRep += "* ";
-				else stringRep += Integer.toString(board[i][j]) + ' ';
+				if (state[i][j] == SquareState.KNOWN) {
+					// squares bordering no MINEs will be represented as spaces
+					if (board[i][j] == 0) stringRep += "  ";
+					// squares that are MINEs will be represented as asterisks *
+					else if (board[i][j] == MINE) stringRep += "* ";
+					else stringRep += Integer.toString(board[i][j]) + ' ';
+				} else if (state[i][j] == SquareState.UNKNOWN) {
+					stringRep += "? ";
+				} else if (state[i][j] == SquareState.FLAGGED) {
+					stringRep += "! ";
+				} else if (state[i][j] == SquareState.DEAD) {
+					stringRep += "F ";
+				}
 			}
 			stringRep += "|\n";
 		}
