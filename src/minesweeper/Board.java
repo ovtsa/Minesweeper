@@ -17,15 +17,15 @@ public class Board {
 	// -1 is chosen to represent a MINE
 	private static final int MINE = -1;
 	
-	// each board location stores a value 0-8 for how many mines are around it
+	// each board location stores a value 0-8 for how many MINEs are around it
 	private int[][] board;
-	// Any board will have a set number of mines related to the difficulty of the game
+	// Any board will have a set number of MINEs related to the difficulty of the game
 	private int numMines;
-	// A random number generator rgn is used to place mines in random locations
+	// A random number generator rgn is used to place MINEs in random locations
 	private Random rgn;
 	
 	/** The default constructor creates a Board of size 20x20 with 50
-	 * randomly-placed mines, so 1/8 of the squares are MINEs, an easy game.
+	 * randomly-placed MINEs, so 1/8 of the squares are MINEs, an easy game.
 	 */
 	public Board() {
 		this.board = new int[DEFAULT_BOARD_HEIGHT][DEFAULT_BOARD_WIDTH];
@@ -36,8 +36,18 @@ public class Board {
 		this.fillNumbers();
 	}
 	
+	public Board(int height, int width, int numMines) {
+		this.board = new int[height][width];
+		this.rgn = new Random();
+		this.numMines = numMines;
+		
+		this.placeMines();
+		this.fillNumbers();
+	}
+	
 	/** placeMines - places numMines MINEs on the board. */
 	private void placeMines() {
+		assert (numMines <= board.length * board[0].length);
 		int i = 0;
 		while (i < numMines) {
 			int boardRowIndexMineQuery = rgn.nextInt(board.length);
@@ -54,82 +64,47 @@ public class Board {
 	 * places them there.
 	 */
 	private void fillNumbers() {
-		// INCOMPLETE: needs to be made more efficient, less wordy
-		// should be divided into multiple helper functions
 		for (int row = 0; row < board.length; row++) {
 			for (int col = 0; col < board[row].length; col++) {
 				/* this code executes for each square in the board
-				 * first let's make sure we're not looking at a mine square */
+				 * first let's make sure we're not looking at a MINE square */
 				if (board[row][col] != MINE) {
-					/* now let's tally up the number of mines in the surrounding 8 squares
+					/* now let's tally up the number of MINEs in the surrounding 8 squares
 					 * the minimum number should be 0, and max should be 8
 					 * if we're in an edge or corner, we should ensure we don't check
 					 * indices out of bounds of the board 2d array
 					 */
-					int sumSurroundingMines = 0;
-					if (row == 0 && col == 0) {
-						// top left corner case
-						if (board[row][col + 1] == MINE) sumSurroundingMines++;
-						if (board[row + 1][col] == MINE) sumSurroundingMines++;
-						if (board[row + 1][col + 1] == MINE) sumSurroundingMines++;
-					} else if (row == 0 && col == board[row].length - 1) {
-						// top right corner case
-						if (board[row][col - 1] == MINE) sumSurroundingMines++;
-						if (board[row + 1][col] == MINE) sumSurroundingMines++;
-						if (board[row + 1][col - 1] == MINE) sumSurroundingMines++;
-					} else if (row == 0) {
-						// catch-all top row case
-						if (board[row][col - 1] == MINE) sumSurroundingMines++;
-						if (board[row][col + 1] == MINE) sumSurroundingMines++;
-						if (board[row + 1][col - 1] == MINE) sumSurroundingMines++;
-						if (board[row + 1][col] == MINE) sumSurroundingMines++;
-						if (board[row + 1][col + 1] == MINE) sumSurroundingMines++;
-					} else if (row == board.length - 1 && col == 0) {
-						// bottom left corner case
-						if (board[row - 1][col] == MINE) sumSurroundingMines++;
-						if (board[row - 1][col + 1] == MINE) sumSurroundingMines++;
-						if (board[row][col + 1] == MINE) sumSurroundingMines++;
-					} else if (row == board.length - 1 && col == board[row].length - 1) {
-						// bottom right corner case
-						if (board[row - 1][col - 1] == MINE) sumSurroundingMines++;
-						if (board[row - 1][col] == MINE) sumSurroundingMines++;
-						if (board[row][col - 1] == MINE) sumSurroundingMines++;
-					} else if (row == board.length - 1) {
-						// catch-all bottom row case
-						if (board[row - 1][col - 1] == MINE) sumSurroundingMines++;
-						if (board[row - 1][col] == MINE) sumSurroundingMines++;
-						if (board[row - 1][col + 1] == MINE) sumSurroundingMines++;
-						if (board[row][col - 1] == MINE) sumSurroundingMines++;
-						if (board[row][col + 1] == MINE) sumSurroundingMines++;
-					} else if (col == 0) {
-						// catch-all leftmost column case
-						if (board[row - 1][col] == MINE) sumSurroundingMines++;
-						if (board[row - 1][col + 1] == MINE) sumSurroundingMines++;
-						if (board[row][col + 1] == MINE) sumSurroundingMines++;
-						if (board[row + 1][col] == MINE) sumSurroundingMines++;
-						if (board[row + 1][col + 1] == MINE) sumSurroundingMines++;
-					} else if (col == board[row].length - 1) {
-						// catch-all rightmost column case
-						if (board[row - 1][col - 1] == MINE) sumSurroundingMines++;
-						if (board[row - 1][col] == MINE) sumSurroundingMines++;
-						if (board[row][col - 1] == MINE) sumSurroundingMines++;
-						if (board[row + 1][col - 1] == MINE) sumSurroundingMines++;
-						if (board[row + 1][col] == MINE) sumSurroundingMines++;
-					} else {
-						// all other squares case
-						if (board[row - 1][col - 1] == MINE) sumSurroundingMines++;
-						if (board[row - 1][col] == MINE) sumSurroundingMines++;
-						if (board[row - 1][col + 1] == MINE) sumSurroundingMines++;
-						if (board[row][col - 1] == MINE) sumSurroundingMines++;
-						if (board[row][col + 1] == MINE) sumSurroundingMines++;
-						if (board[row + 1][col - 1] == MINE) sumSurroundingMines++;
-						if (board[row + 1][col] == MINE) sumSurroundingMines++;
-						if (board[row + 1][col + 1] == MINE) sumSurroundingMines++;
-					}
-					board[row][col] = sumSurroundingMines;
+					board[row][col] = numMinesAround(row, col);
 				}
 			}
 		}
+	}
+	
+	/** numMinesAround - a private method that calculates the number of mines
+	 * in surrounding squares.
+	 * 
+	 * @param row - the row index whose surrounding squares will be checked
+	 * @param col - the column index whose surrounding squares will be checked
+	 * @return the number of MINEs found in surrounding squares
+	 */
+	private int numMinesAround(int row, int col) {
+		assert row >= 0 && row < board.length &&
+			   col >= 0 && col < board[row].length;
+		
+		int sumSurroundingMines = 0;
+		// Since Java short-circuits, these won't cause ArrayIndexOutOfBoundsExceptions
+		// conditions below both refrain from checking out-of-bounds squares and
+		// sum up the number of mines in extant squares
+		if (row - 1 >= 0 && col - 1 >= 0 && board[row - 1][col - 1] == MINE) sumSurroundingMines++;
+		if (row - 1 >= 0 && board[row - 1][col] == MINE) sumSurroundingMines++;
+		if (row - 1 >= 0 && col + 1 < board[row].length && board[row - 1][col + 1] == MINE) sumSurroundingMines++;
+		if (col - 1 >= 0 && board[row][col - 1] == MINE) sumSurroundingMines++;
+		if (col + 1 < board[row].length && board[row][col + 1] == MINE) sumSurroundingMines++;
+		if (row + 1 < board.length && col - 1 >= 0 && board[row + 1][col - 1] == MINE) sumSurroundingMines++;
+		if (row + 1 < board.length && board[row + 1][col] == MINE) sumSurroundingMines++;
+		if (row + 1 < board.length && col + 1 < board[row].length && board[row + 1][col + 1] == MINE) sumSurroundingMines++;
+		
+		return sumSurroundingMines;
 	}
 	
 	/** toString - creates a visual representation of a  Minesweeper Board.
@@ -154,9 +129,9 @@ public class Board {
 		for (int i = 0; i < board.length; i++) {
 			stringRep += "| ";
 			for (int j = 0; j < board[i].length; j++) {
-				// squares bordering no mines will be represented as spaces
+				// squares bordering no MINEs will be represented as spaces
 				if (board[i][j] == 0) stringRep += "  ";
-				// squares that are mines will be represented as asterisks *
+				// squares that are MINEs will be represented as asterisks *
 				else if (board[i][j] == MINE) stringRep += "* ";
 				else stringRep += Integer.toString(board[i][j]) + ' ';
 			}
