@@ -139,7 +139,7 @@ public class Board {
 	 */
 	public String toString() {
 		// Beginning with empty String
-		String stringRep = "";
+		String stringRep = "\n     ";
 		
 		/* Corners should be pluses.
 		 * 
@@ -147,13 +147,29 @@ public class Board {
 		 * most terminal windows give more space between rows than columns
 		 * of text.
 		 */
-		stringRep += "+ ";
+		// labeling columns' tens digits
+		for (int i = 1; i <= board[0].length; i++) {
+			if (i / 10 != 0) stringRep += Integer.toString(i / 10) + ' ';
+			else stringRep += "  ";
+		}
+		stringRep += "\n     ";
+		// labeling columns' ones digits
+		for (int i = 1; i <= board[0].length; i++) {
+			stringRep += Integer.toString(i % 10) + ' ';
+		}
+		
+		stringRep += '\n';
+		// labeling columns' ones digits
+		
+		stringRep += "   + ";
 		// horizontal borders are represented by dashes
 		for (int i = 0; i < board[0].length; i++) stringRep += "- ";
 		stringRep += "+\n";
 		
 		for (int i = 0; i < board.length; i++) {
-			stringRep += "| ";
+			if (i  + 1 < 10) stringRep += " " + Integer.toString(i + 1);
+			else stringRep += Integer.toString(i + 1);
+			stringRep += " | ";
 			for (int j = 0; j < board[i].length; j++) {
 				if (state[i][j] == SquareState.KNOWN) {
 					// squares bordering no MINEs will be represented as spaces
@@ -173,7 +189,7 @@ public class Board {
 		}
 
 		// Repeating the horizontal line process
-		stringRep += "+ ";
+		stringRep += "   + ";
 		for (int i = 0; i < board[0].length; i++) stringRep += "- ";
 		stringRep += "+\n";
 		
