@@ -124,8 +124,8 @@ public class Board {
 		return sumSurroundingMines;
 	}
 	
-	/** revealBoard - sets all squares to being visible using the state[][] array. */
-	public void revealBoard() {
+	/** reveal - sets all squares to being visible using the state[][] array. */
+	public void reveal() {
 		for (int row = 0; row < state.length; row++) {
 			for (int col = 0; col < state[row].length; col++) {
 				state[row][col] = SquareState.KNOWN;
