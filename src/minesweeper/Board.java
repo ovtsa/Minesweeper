@@ -51,6 +51,21 @@ public class Board {
 		this.fillNumbers();
 	}
 	
+	public SquareState click(int row, int col) {
+		if (board[row][col] == MINE) state[row][col] = SquareState.DEAD;
+		else state[row][col] = SquareState.KNOWN;
+		// TODO: reveal the borders of the empty region if square was totally empty
+		return state[row][col];
+	}
+	
+	public void flag(int row, int col) {
+		if (state[row][col] == SquareState.UNKNOWN) state[row][col] = SquareState.FLAGGED;
+	}
+	
+	public SquareState getStateAt(int row, int col) {
+		return state[row][col];
+	}
+	
 	/** initializeSquareStates - sets all values in the state[][] array 
 	 *  to SquareState.UNKNOWN
 	 */
