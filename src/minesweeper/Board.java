@@ -25,6 +25,8 @@ public class Board {
 	private int numMines;
 	// A random number generator rgn is used to place MINEs in random locations
 	private Random rgn;
+	// Board needs to know if the player has clicked on a mine so it can show locations
+	private boolean hasDied;
 	
 	/** The default constructor creates a Board of size 20x20 with 50
 	 * randomly-placed MINEs, so 1/8 of the squares are MINEs, an easy game.
@@ -34,6 +36,7 @@ public class Board {
 		this.state = new SquareState[DEFAULT_BOARD_HEIGHT][DEFAULT_BOARD_WIDTH];
 		this.rgn = new Random();
 		this.numMines = DEFAULT_NUM_MINES;
+		this.hasDied = false;
 		
 		this.initializeSquareStates();
 		this.placeMines();
@@ -45,6 +48,7 @@ public class Board {
 		this.state = new SquareState[height][width];
 		this.rgn = new Random();
 		this.numMines = numMines;
+		this.hasDied = false;
 		
 		this.initializeSquareStates();
 		this.placeMines();
@@ -52,14 +56,32 @@ public class Board {
 	}
 	
 	public SquareState click(int row, int col) {
-		if (board[row][col] == MINE) state[row][col] = SquareState.DEAD;
-		else state[row][col] = SquareState.KNOWN;
+		if (board[row][col] == MINE && state[row][col] != SquareState.FLAGGED) {
+			state[row][col] = SquareState.DEAD;
+			hasDied = true;
+		}
+		else { 
+			state[row][col] = SquareState.KNOWN;
+			if (board[row][col] == 0) {
+				// recurse on surroundings, because you know it's safe
+				if (row - 1 >= 0 && col - 1 >= 0 && state[row - 1][col - 1] == SquareState.UNKNOWN) click(row - 1, col - 1);
+				if (row - 1 >= 0 && state[row - 1][col] == SquareState.UNKNOWN) click(row - 1, col);
+				if (row - 1 >= 0 && col + 1 < board[0].length && state[row - 1][col + 1] == SquareState.UNKNOWN) click(row - 1, col + 1);
+				if (col - 1 >= 0 && state[row ][col - 1] == SquareState.UNKNOWN) click(row, col - 1);
+				if (col + 1 < board[0].length && state[row][col + 1] == SquareState.UNKNOWN) click(row, col + 1);
+				if (row + 1 < board.length && col - 1 >= 0 && state[row + 1][col - 1] == SquareState.UNKNOWN) click(row + 1, col - 1);
+				if (row + 1 < board.length && state[row + 1][col] == SquareState.UNKNOWN) click(row + 1, col);
+				if (row + 1 < board.length && col + 1 < board[0].length && state[row + 1][col + 1] == SquareState.UNKNOWN) click(row + 1, col + 1);
+			}
+		}
 		// TODO: reveal the borders of the empty region if square was totally empty
+		
 		return state[row][col];
 	}
 	
 	public void flag(int row, int col) {
 		if (state[row][col] == SquareState.UNKNOWN) state[row][col] = SquareState.FLAGGED;
+		else if (state[row][col] == SquareState.FLAGGED) state[row][col] = SquareState.UNKNOWN;
 	}
 	
 	public SquareState getStateAt(int row, int col) {
@@ -91,6 +113,7 @@ public class Board {
 		}
 	}
 	
+	
 	/** fillNumbers - given the locations of all MINEs on the board, 
 	 * fillNumbers calculates the numbers that should be in each square, and
 	 * places them there.
@@ -111,6 +134,7 @@ public class Board {
 			}
 		}
 	}
+	
 	
 	/** numMinesAround - a private method that calculates the number of mines
 	 * in surrounding squares.
@@ -140,10 +164,23 @@ public class Board {
 	}
 	
 	/** reveal - sets all squares to being visible using the state[][] array. */
+	
 	public void reveal() {
 		for (int row = 0; row < state.length; row++) {
 			for (int col = 0; col < state[row].length; col++) {
 				state[row][col] = SquareState.KNOWN;
+			}
+		}
+	}
+	
+	
+	private void revealMinesEndGame() {
+		for (int row = 0; row < state.length; row++) {
+			for (int col = 0; col < state[0].length; col++) {
+				if (board[row][col] == MINE && state[row][col] != SquareState.DEAD &&
+						state[row][col] != SquareState.FLAGGED) {
+					state[row][col] = SquareState.KNOWN;
+				}
 			}
 		}
 	}
@@ -174,12 +211,14 @@ public class Board {
 		}
 		
 		stringRep += '\n';
-		// labeling columns' ones digits
 		
 		stringRep += "   + ";
 		// horizontal borders are represented by dashes
 		for (int i = 0; i < board[0].length; i++) stringRep += "- ";
 		stringRep += "+\n";
+		
+		// if player has died, mines should be revealed and compared to flags
+		if (hasDied) revealMinesEndGame();
 		
 		for (int i = 0; i < board.length; i++) {
 			if (i  + 1 < 10) stringRep += " " + Integer.toString(i + 1);
@@ -195,7 +234,10 @@ public class Board {
 				} else if (state[i][j] == SquareState.UNKNOWN) {
 					stringRep += "? ";
 				} else if (state[i][j] == SquareState.FLAGGED) {
-					stringRep += "! ";
+					if (hasDied) {
+						if (board[i][j] == MINE) stringRep += "! ";
+						else stringRep += "X ";
+					} else stringRep += "! ";
 				} else if (state[i][j] == SquareState.DEAD) {
 					stringRep += "F ";
 				}

@@ -34,8 +34,10 @@ public class Game {
 		Game game = new Game();
 		System.out.println(game.board);
 		// temporary
-		game.board.reveal();
-		System.out.println(game.board);
+		game.makeFirstMove();
+		while (game.state == GameState.ACTIVE) {
+			game.makeMove();
+		}
 	}
 	
 	private void printCredits() {
@@ -97,7 +99,7 @@ public class Game {
 	
 	private void makeFirstMove() {
 		System.out.println("Syntax: row,col,action");
-		System.out.println("Actions: \"c\" for \"click,\" \"f\" for \"flag\"");
+		System.out.println("Actions: \"c\" for \"click,\" \"f\" for \"flag\" or \"unflag\"");
 	}
 	
 	private GameState makeMove() {
@@ -106,15 +108,19 @@ public class Game {
 		String[] choices = kb.nextLine().split(",");
 		int row = Integer.parseInt(choices[0]);
 		int col = Integer.parseInt(choices[1]);
-		String action = choices[3];
+		String action = choices[2];
 		if (action.equals("c")) {
 			SquareState result = board.click(row - 1, col - 1);
 			if (result == SquareState.DEAD) state = GameState.LOST;
 			else if (gameWon()) state = GameState.WON;
 			else state = GameState.ACTIVE;
 		} else if (action.equals("f")) {
-			if (board.getStateAt(row - 1, col - 1) == SquareState.UNKNOWN) board.flag(row - 1, col - 1);
+			if (board.getStateAt(row - 1, col - 1) == SquareState.UNKNOWN ||
+					board.getStateAt(row - 1, col - 1) == SquareState.FLAGGED) {
+				board.flag(row - 1, col - 1);
+			}
 		}
+		System.out.println(board);
 		
 		return state;
 	}
