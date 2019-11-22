@@ -28,16 +28,12 @@ public class Game {
 		this.state = GameState.ACTIVE;
 		// getBoardSpecifications sets diff as well
 		this.board = getBoardSpecifications();
+		System.out.println(this.board);
 	}
 	
 	public static void main(String[] args) {
 		Game game = new Game();
-		System.out.println(game.board);
-		// temporary
-		game.makeFirstMove();
-		while (game.state == GameState.ACTIVE) {
-			game.makeMove();
-		}
+		game.play();
 	}
 	
 	private void printCredits() {
@@ -97,12 +93,16 @@ public class Game {
 		return gameBoard;
 	}
 	
-	private void makeFirstMove() {
+	public void play() {
 		System.out.println("Syntax: row,col,action");
 		System.out.println("Actions: \"c\" for \"click,\" \"f\" for \"flag\" or \"unflag\"");
+		state = makeMove(true);
+		while (state == GameState.ACTIVE) {
+			makeMove(false);
+		}
 	}
 	
-	private GameState makeMove() {
+	private GameState makeMove(boolean firstMove) {
 		// to implement: exception checking
 		System.out.print("> ");
 		String[] choices = kb.nextLine().split(",");
@@ -111,9 +111,18 @@ public class Game {
 		String action = choices[2];
 		if (action.equals("c")) {
 			SquareState result = board.click(row - 1, col - 1);
-			if (result == SquareState.DEAD) state = GameState.LOST;
-			else if (gameWon()) state = GameState.WON;
-			else state = GameState.ACTIVE;
+			if (result == SquareState.DEAD && firstMove) {
+				while (result == SquareState.DEAD) {
+					board = getNewBoardQuietly();
+					result = board.click(row - 1, col - 1);
+				}
+			} else if (result == SquareState.DEAD) {
+				state = GameState.LOST;
+				System.out.println("Game over");
+			} else if (gameWon()) {
+				state = GameState.WON;
+				System.out.println("Victory!");
+			} else state = GameState.ACTIVE;
 		} else if (action.equals("f")) {
 			if (board.getStateAt(row - 1, col - 1) == SquareState.UNKNOWN ||
 					board.getStateAt(row - 1, col - 1) == SquareState.FLAGGED) {

@@ -171,6 +171,14 @@ public class Board {
 	}
 	
 	
+	public void hide() {
+		for (int row = 0; row < board.length; row++) {
+			for (int col = 0; col < board[row].length; col++) {
+				state[row][col] = SquareState.UNKNOWN;
+			}
+		}
+	}
+	
 	private void revealMinesEndGame() {
 		for (int row = 0; row < state.length; row++) {
 			for (int col = 0; col < state[0].length; col++) {
