@@ -43,6 +43,12 @@ public class Board {
 		this.fillNumbers();
 	}
 	
+	/** This constructor allows you to create a Board of a modified size.
+	 * 
+	 * @param height is the number of rows on the board
+	 * @param width is the number of columns on the board
+	 * @param numMines is the number of mines the board should have
+	 */
 	public Board(int height, int width, int numMines) {
 		this.board = new int[height][width];
 		this.state = new SquareState[height][width];
@@ -55,12 +61,22 @@ public class Board {
 		this.fillNumbers();
 	}
 	
+	/** click - a sometimes recursive function that simulates a "click" on a square
+	 * 
+	 * @param row is the row index to be clicked upon
+	 * @param col is the column index to  be clicked upon
+	 * @return the revealed SquareState of that square after clicking
+	 */
 	public SquareState click(int row, int col) {
 		if (board[row][col] == MINE && state[row][col] != SquareState.FLAGGED) {
+			// this block executes if you clicked on an unflagged mine
 			state[row][col] = SquareState.DEAD;
 			hasDied = true;
 		} else if (state[row][col] != SquareState.FLAGGED) { 
+			// this block executes if you clicked on a safe square
 			state[row][col] = SquareState.KNOWN;
+			/* if this square had no surrounding mines, you know it's safe to click the
+			   surrounding squares too */
 			if (board[row][col] == 0) {
 				// recurse on surroundings, because you know it's safe
 				if (row - 1 >= 0 && col - 1 >= 0 && state[row - 1][col - 1] == SquareState.UNKNOWN) click(row - 1, col - 1);
@@ -76,11 +92,22 @@ public class Board {
 		return state[row][col];
 	}
 	
+	/** flag - either places or removes a flag at location given
+	 * 
+	 * @param row is the row index of the flag to add/remove
+	 * @param col is the column index of the flag to add/remove
+	 */
 	public void flag(int row, int col) {
 		if (state[row][col] == SquareState.UNKNOWN) state[row][col] = SquareState.FLAGGED;
 		else if (state[row][col] == SquareState.FLAGGED) state[row][col] = SquareState.UNKNOWN;
 	}
 	
+	/** getStateAt - gets the state information about the square at location row, col
+	 * 
+	 * @param row the row index to examine
+	 * @param col the col index to examine
+	 * @return the SquareState at location row, col
+	 */
 	public SquareState getStateAt(int row, int col) {
 		return state[row][col];
 	}
@@ -96,9 +123,11 @@ public class Board {
 		}
 	}
 	
+	/** placeMines - places numMines mines randomly across the board.
+	 */
 	/** placeMines - places numMines MINEs on the board. */
 	private void placeMines() {
-		assert numMines <= board.length * board[0].length;
+		assert numMines < board.length * board[0].length;
 		int i = 0;
 		while (i < numMines) {
 			int boardRowIndexMineQuery = rgn.nextInt(board.length);
@@ -162,6 +191,8 @@ public class Board {
 	
 	/** reveal - sets all squares to being visible using the state[][] array. */
 	
+	/** reveal - sets the state at each location to SquareState.KNOWN
+	 */
 	public void reveal() {
 		for (int row = 0; row < state.length; row++) {
 			for (int col = 0; col < state[row].length; col++) {
@@ -170,7 +201,8 @@ public class Board {
 		}
 	}
 	
-	
+	/** hide - sets the state at each location to SquareState.UNKNOWN
+	 */
 	public void hide() {
 		for (int row = 0; row < board.length; row++) {
 			for (int col = 0; col < board[row].length; col++) {
@@ -179,6 +211,9 @@ public class Board {
 		}
 	}
 	
+	/** revealMinesEndGame - after a player dies, this method can be used to
+	 * reveal all the mines that were left on the Board.
+	 */
 	private void revealMinesEndGame() {
 		for (int row = 0; row < state.length; row++) {
 			for (int col = 0; col < state[0].length; col++) {
