@@ -187,6 +187,9 @@ public class Board {
 	 * @return the Board in String form
 	 */
 	public String toString() {
+		// if player has died, mines should be revealed and compared to flags
+		if (hasDied) revealMinesEndGame();
+		
 		// Beginning with empty String
 		String stringRep = "\n     ";
 		
@@ -214,9 +217,6 @@ public class Board {
 		for (int i = 0; i < board[0].length; i++) stringRep += "- ";
 		stringRep += "+\n";
 		
-		// if player has died, mines should be revealed and compared to flags
-		if (hasDied) revealMinesEndGame();
-		
 		for (int i = 0; i < board.length; i++) {
 			if (i  + 1 < 10) stringRep += " " + Integer.toString(i + 1);
 			else stringRep += Integer.toString(i + 1);
@@ -239,13 +239,25 @@ public class Board {
 					stringRep += "F ";
 				}
 			}
-			stringRep += "|\n";
+			stringRep += "| ";
+			stringRep += Integer.toString(i + 1) + '\n';
 		}
 
 		// Repeating the horizontal line process
 		stringRep += "   + ";
 		for (int i = 0; i < board[0].length; i++) stringRep += "- ";
-		stringRep += "+\n";
+		stringRep += "+\n     ";
+		
+		for (int i = 1; i <= board[0].length; i++) {
+			if (i / 10 != 0) stringRep += Integer.toString(i / 10) + ' ';
+			else stringRep += "  ";
+		}
+		stringRep += "\n     ";
+		// labeling columns' ones digits
+		for (int i = 1; i <= board[0].length; i++) {
+			stringRep += Integer.toString(i % 10) + ' ';
+		}
+		stringRep += '\n';
 		
 		return stringRep;
 	}
