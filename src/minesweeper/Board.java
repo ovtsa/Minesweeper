@@ -59,8 +59,7 @@ public class Board {
 		if (board[row][col] == MINE && state[row][col] != SquareState.FLAGGED) {
 			state[row][col] = SquareState.DEAD;
 			hasDied = true;
-		}
-		else { 
+		} else if (state[row][col] != SquareState.FLAGGED) { 
 			state[row][col] = SquareState.KNOWN;
 			if (board[row][col] == 0) {
 				// recurse on surroundings, because you know it's safe
@@ -74,8 +73,6 @@ public class Board {
 				if (row + 1 < board.length && col + 1 < board[0].length && state[row + 1][col + 1] == SquareState.UNKNOWN) click(row + 1, col + 1);
 			}
 		}
-		// TODO: reveal the borders of the empty region if square was totally empty
-		
 		return state[row][col];
 	}
 	
@@ -232,12 +229,12 @@ public class Board {
 					else if (board[i][j] == MINE) stringRep += "* ";
 					else stringRep += Integer.toString(board[i][j]) + ' ';
 				} else if (state[i][j] == SquareState.UNKNOWN) {
-					stringRep += "? ";
+					stringRep += "\u2588 ";
 				} else if (state[i][j] == SquareState.FLAGGED) {
 					if (hasDied) {
-						if (board[i][j] == MINE) stringRep += "! ";
+						if (board[i][j] == MINE) stringRep += "\u256C ";
 						else stringRep += "X ";
-					} else stringRep += "! ";
+					} else stringRep += "\u256C ";
 				} else if (state[i][j] == SquareState.DEAD) {
 					stringRep += "F ";
 				}
