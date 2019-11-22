@@ -125,7 +125,6 @@ public class Board {
 	
 	/** placeMines - places numMines mines randomly across the board.
 	 */
-	/** placeMines - places numMines MINEs on the board. */
 	private void placeMines() {
 		assert numMines < board.length * board[0].length;
 		int i = 0;
@@ -138,7 +137,6 @@ public class Board {
 			}
 		}
 	}
-	
 	
 	/** fillNumbers - given the locations of all MINEs on the board, 
 	 * fillNumbers calculates the numbers that should be in each square, and
@@ -160,7 +158,6 @@ public class Board {
 			}
 		}
 	}
-	
 	
 	/** numMinesAround - a private method that calculates the number of mines
 	 * in surrounding squares.
@@ -188,8 +185,6 @@ public class Board {
 		
 		return sumSurroundingMines;
 	}
-	
-	/** reveal - sets all squares to being visible using the state[][] array. */
 	
 	/** reveal - sets the state at each location to SquareState.KNOWN
 	 */

@@ -1,6 +1,8 @@
 package minesweeper;
 
 import java.util.Scanner;
+import java.util.InputMismatchException;
+import java.util.regex.PatternSyntaxException;
 
 /** Game - a driver for a text-based game of Minesweeper.
  * 
@@ -59,14 +61,19 @@ public class Game {
 	 * using user input.
 	 */
 	public void play() {
-		System.out.println("Syntax: row,col,action");
-		System.out.println("Actions: \"c\" for \"click,\" \"f\" for \"flag\" or \"unflag\"");
+		System.out.println("Syntax: row,col,action OR x to quit");
+		System.out.println("Actions: \"c\" for \"click,\" \"f\" for \"flag\"");
 		/* passing true because this is the first move (necessary in case user clicks on mine)
 		   on first move */
-		state = makeMove(true);
-		// loop executing moves will execute until game is either won or lost
-		while (state == GameState.ACTIVE) {
-			makeMove(false);
+		// loop keeps executing moves until player decides to quit
+		boolean firstMove = true;
+		boolean stillPlaying = true;
+		while (stillPlaying) {
+			state = makeMove(firstMove);
+			if (state != GameState.ACTIVE) {
+				stillPlaying = askToPlayAgain();
+				firstMove = true;
+			} else firstMove = false;
 		}
 	}
 
@@ -93,44 +100,60 @@ public class Game {
 		System.out.printf("HARD   - %dx%d grid, %d mines\n", 
 							HARD_HEIGHT, HARD_WIDTH, HARD_NUM_MINES);
 		System.out.println("CUSTOM - ?x?   grid, ?   mines");
-		System.out.print("Type selection: ");
-		String response = kb.nextLine().trim().toUpperCase();
-		Board gameBoard;
+		Board gameBoard = null;
 		
-		// this if-else-if logic just creates the Board and sets this class's fields relevantly
-		if (response.equals("EASY")) {
-			gameBoard = new Board(EASY_HEIGHT, EASY_WIDTH,
-								 EASY_NUM_MINES);
-			heightChosen = EASY_HEIGHT;
-			widthChosen = EASY_WIDTH;
-			numMinesChosen = EASY_NUM_MINES;
-		} else if (response.equals("NORMAL")) {
-			gameBoard = new Board(NORMAL_HEIGHT, NORMAL_WIDTH,
-								  NORMAL_NUM_MINES);
-			heightChosen = NORMAL_HEIGHT;
-			widthChosen = NORMAL_WIDTH;
-			numMinesChosen = NORMAL_NUM_MINES;
-		} else if (response.equals("HARD")) {
-			gameBoard = new Board(HARD_HEIGHT, HARD_WIDTH,
-								  HARD_NUM_MINES);
-			heightChosen = HARD_HEIGHT;
-			widthChosen = HARD_WIDTH;
-			numMinesChosen = HARD_NUM_MINES;
-		} else if (response.equals("CUSTOM")) {
-			System.out.print("height: ");
-			int boardHeight = kb.nextInt();
-			System.out.print("width:  ");
-			int boardWidth = kb.nextInt();
-			System.out.print("mines:  ");
-			int numMines = kb.nextInt();
-			gameBoard = new Board(boardHeight, boardWidth, numMines);
-		} else {
-			// switch case default
-			// creates a normal Board in this case
-			System.out.println("Invalid response");
-			System.out.println("Selecting default NORMAL difficulty");
-			gameBoard = new Board(NORMAL_HEIGHT, NORMAL_WIDTH,
-								  NORMAL_NUM_MINES);
+		boolean validInput = false;
+		while (!validInput) {
+			System.out.print("Type selection: ");
+			String response = kb.nextLine().trim().toUpperCase();
+			// this if-else-if logic just creates the Board and sets this class's fields relevantly
+			if (response.equals("EASY")) {
+				gameBoard = new Board(EASY_HEIGHT, EASY_WIDTH,
+									 EASY_NUM_MINES);
+				heightChosen = EASY_HEIGHT;
+				widthChosen = EASY_WIDTH;
+				numMinesChosen = EASY_NUM_MINES;
+				validInput = true;
+			} else if (response.equals("NORMAL")) {
+				gameBoard = new Board(NORMAL_HEIGHT, NORMAL_WIDTH,
+									  NORMAL_NUM_MINES);
+				heightChosen = NORMAL_HEIGHT;
+				widthChosen = NORMAL_WIDTH;
+				numMinesChosen = NORMAL_NUM_MINES;
+				validInput = true;
+			} else if (response.equals("HARD")) {
+				gameBoard = new Board(HARD_HEIGHT, HARD_WIDTH,
+									  HARD_NUM_MINES);
+				heightChosen = HARD_HEIGHT;
+				widthChosen = HARD_WIDTH;
+				numMinesChosen = HARD_NUM_MINES;
+				validInput = true;
+			} else if (response.equals("CUSTOM")) {
+				// danger: potential invalid input - not integers
+				try {
+					System.out.print("height: ");
+					int boardHeight = kb.nextInt();
+					System.out.print("width:  ");
+					int boardWidth = kb.nextInt();
+					System.out.print("mines:  ");
+					int numMines = kb.nextInt();
+					if (boardHeight > 50 || boardWidth > 50 || numMines >= boardHeight * boardWidth) {
+						throw new IllegalArgumentException();
+					}
+					gameBoard = new Board(boardHeight, boardWidth, numMines);
+					heightChosen = boardHeight;
+					widthChosen = boardWidth;
+					numMinesChosen = numMines;
+					validInput = true;
+				} catch (InputMismatchException ime) {
+					System.out.println("Invalid response");
+				} catch (IllegalArgumentException iae) {
+					System.out.println("Number of rows or columns cannot exceed 50");
+				}
+			} else {
+				// switch case default
+				System.out.println("Invalid response");
+			}
 		}
 		
 		return gameBoard;
@@ -149,40 +172,52 @@ public class Game {
 		 * DANGERS: row/col too low/high, row/col not integers, invalid action, 
 		 * 			improper format (not two comma separators) */
 		System.out.print("> ");
-		String[] choices = kb.nextLine().split(",");
-		int row = Integer.parseInt(choices[0]);
-		int col = Integer.parseInt(choices[1]);
-		String action = choices[2];
+		String userInput = kb.nextLine().toUpperCase();
 		
-		// The upper layer of this if-else-if block branches based off action chosen.
-		if (action.equals("c")) {
-			// This branch is reached if the "click" action was chosen
-			SquareState result = board.click(row - 1, col - 1);
-			if (result == SquareState.DEAD && firstMove) {
-				// if the player clicked on a bomb on the first move,
-				// we should get a different board so that doesn't happen
-				while (result == SquareState.DEAD) {
-					board = getNewBoardQuietly();
-					result = board.click(row - 1, col - 1);
+		try {
+			String[] choices = userInput.split(",");
+			int row = Integer.parseInt(choices[0]);
+			int col = Integer.parseInt(choices[1]);
+			String action = choices[2];
+			if (choices.length > 3) throw new InvalidActionException(userInput);
+			if (row < 0 || row > heightChosen || col < 0 || col > widthChosen) throw new IllegalArgumentException();
+			
+			// The upper layer of this if-else-if block branches based off action chosen.
+			if (action.equals("C")) {
+				// This branch is reached if the "click" action was chosen
+				SquareState result = board.click(row - 1, col - 1);
+				if (result == SquareState.DEAD && firstMove) {
+					// if the player clicked on a bomb on the first move,
+					// we should get a different board so that doesn't happen
+					while (result == SquareState.DEAD) {
+						board = getNewBoardQuietly();
+						result = board.click(row - 1, col - 1);
+					}
+				} else if (result == SquareState.DEAD) {
+					// if the player clicked on a bomb
+					state = GameState.LOST;
+					System.out.println("Game over");
+				} else if (gameWon()) {
+					// if the game is won
+					state = GameState.WON;
+					System.out.println("Victory!");
+				} else state = GameState.ACTIVE;
+			} else if (action.equals("F")) {
+				// This branch is reached if the "flag" action was chosen
+				if (board.getStateAt(row - 1, col - 1) == SquareState.UNKNOWN ||
+						board.getStateAt(row - 1, col - 1) == SquareState.FLAGGED) {
+					board.flag(row - 1, col - 1);
 				}
-			} else if (result == SquareState.DEAD) {
-				// if the player clicked on a bomb
-				state = GameState.LOST;
-				System.out.println("Game over");
-			} else if (gameWon()) {
-				// if the game is won
-				state = GameState.WON;
-				System.out.println("Victory!");
-			} else state = GameState.ACTIVE;
-		} else if (action.equals("f")) {
-			// This branch is reached if the "flag" action was chosen
-			if (board.getStateAt(row - 1, col - 1) == SquareState.UNKNOWN ||
-					board.getStateAt(row - 1, col - 1) == SquareState.FLAGGED) {
-				board.flag(row - 1, col - 1);
-			}
+			} else throw new InvalidActionException(userInput);
+			System.out.println(board);
+		} catch (PatternSyntaxException | NumberFormatException | 
+				 ArrayIndexOutOfBoundsException | InvalidActionException ex1) {
+			// this block is reached if the input String couldn't be split by commas
+			if (userInput.toUpperCase().equals("X")) state = GameState.CANCELLED;
+			else System.out.println("Invalid syntax\nCorrect syntax: row,col,action");
+		} catch (IllegalArgumentException iae) {
+			System.out.println("row/column values chosen out of bounds");
 		}
-		// see the board after this move has been made
-		System.out.println(board);
 		
 		return state;
 	}
@@ -215,5 +250,28 @@ public class Game {
 	 */
 	private Board getNewBoardQuietly() {
 		return new Board(heightChosen, widthChosen, numMinesChosen);
+	}
+	
+	/** askToPlayAgain - if a game is over, this method can create a new board
+	 * for a new game.
+	 * 
+	 * @return whether the user chose to continue the game
+	 */
+	private boolean askToPlayAgain() {
+		System.out.println("Play again? y/n");
+		boolean validResponse = false;
+		String response = "";
+		while (!validResponse) {
+			System.out.print("> ");
+			response = kb.nextLine();
+			if (response.toUpperCase().equals("Y")) {
+				board = getBoardSpecifications();
+				state = GameState.ACTIVE;
+				System.out.println(board);
+				validResponse = true;
+			} else if (response.toUpperCase().equals("N")) validResponse = true;
+			else System.out.println("Invalid input");
+		}
+		return response.toUpperCase().equals("Y");
 	}
 }

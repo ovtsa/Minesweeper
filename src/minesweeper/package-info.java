@@ -1,8 +1,6 @@
-/**
+/** Classes necessary for a cohesive text-based game of Minesweeper.
  * 
- */
-/**
- * @author nathan
- *
+ * @author Nathan Jobe
+ * @version %I%, %G%
  */
 package minesweeper;
