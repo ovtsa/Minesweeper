@@ -3,4 +3,4 @@
  * @author Nathan Jobe
  * @version %I%, %G%
  */
-package minesweeper;
+package game;

@@ -1,4 +1,4 @@
-package minesweeper;
+package game;
 
 /** A custom exception to be thrown when the user types illegal input.
  * 

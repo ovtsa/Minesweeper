@@ -1,4 +1,4 @@
-package minesweeper;
+package game;
 
 /** SquareState - an enum of the different states to be tracked for each square
  * of a Board.

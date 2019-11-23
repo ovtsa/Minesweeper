@@ -1,7 +1,8 @@
 package tests;
 
 import java.util.Random;
-import minesweeper.Board;
+
+import game.Board;
 
 /** Any tests related to the functions of the Board class go here.
  * 
