@@ -1,8 +1,11 @@
 package gui;
 
+
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.scene.Scene;
@@ -11,14 +14,25 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 
 public class MinesweeperApp extends Application {
+	// Always useful fields
+	private Stage stage;
+	private Scene currentScene;
+	
 	// menuScene useful fields
 	private Scene menuScene;
 	private ChoiceBox<String> menuDifficultyChoiceBox;
@@ -27,28 +41,60 @@ public class MinesweeperApp extends Application {
 	private Slider menuNumMinesSlider;
 	private Button menuContinueButton;
 	
+	// gameScene useful fields
+	private Scene gameScene;
+	private Button gameBackButton;
+	private GameButton gameButton;
+	private GridButton[][] gridButtons;
+	
 	@Override
-	public void start(Stage stage) {
-		initializeStage(stage);
+	public void start(Stage primaryStage) {
+		initializeStage(primaryStage);
 		initializeMenu();
 		
-		switchStageToScene(stage, menuScene);
+		switchStageToScene(primaryStage, menuScene);
 	}
 	
-	public void initializeStage(Stage stage) {
-		stage.setTitle("Minesweeper");
-		stage.initStyle(StageStyle.DECORATED);
+	public Scene getMenuScene() {
+		return menuScene;
 	}
 	
-	public void switchStageToScene(Stage stage, Scene scene) {
+	public String getMenuDifficultyChoice() {
+		return menuDifficultyChoiceBox.getValue();
+	}
+
+	public int getMenuHeightSliderValue() {
+		return menuHeightSlider.valueProperty().intValue();
+	}
+	
+	public int getMenuWidthSliderValue() {
+		return menuWidthSlider.valueProperty().intValue();
+	}
+	
+	public int getMenuNumMinesSliderValue() {
+		return menuNumMinesSlider.valueProperty().intValue();
+	}
+	
+	private void initializeStage(Stage primaryStage) {
+		primaryStage.setTitle("Minesweeper");
+		primaryStage.initStyle(StageStyle.DECORATED);
+		this.stage = primaryStage;
+	}
+	
+	private void switchStageToScene(Stage stage, Scene scene) {
+		stage.setMinHeight(0);
+		stage.setMinWidth(0);
 		stage.setScene(scene);
 		stage.sizeToScene();
 		stage.show();
+		stage.centerOnScreen();
 		stage.setMinHeight(stage.getHeight());
 		stage.setMinWidth(stage.getWidth());
+		currentScene = scene;
 	}
 	
-	public Scene initializeMenu() {
+	private void initializeMenu() {
+		// TODO: Shorten this method
 		menuDifficultyChoiceBox = new ChoiceBox<String>();
 		menuDifficultyChoiceBox.getItems().add("EASY");
 		menuDifficultyChoiceBox.getItems().add("MODERATE");
@@ -81,7 +127,7 @@ public class MinesweeperApp extends Application {
 			}
 		});
 		
-		menuWidthSlider = new Slider(1, 50, 16);
+		menuWidthSlider = new Slider(8, 50, 16);
 		Label widthLabel = new Label("16");
 		menuWidthSlider.valueProperty().addListener(new ChangeListener<Number>() {
 			@Override
@@ -137,6 +183,15 @@ public class MinesweeperApp extends Application {
 		menuGrid.add(numMinesLabel,             2, 3, 3, 1);
 		
 		menuContinueButton = new Button("Continue");
+		menuContinueButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				initializeGame(getMenuHeightSliderValue(), 
+							   getMenuWidthSliderValue(), getMenuNumMinesSliderValue());
+				
+				switchStageToScene(stage, gameScene);
+			}
+		});
 		
 		VBox menuSceneDivider = new VBox(20, menuGrid,
 										new Separator(Orientation.HORIZONTAL),
@@ -145,7 +200,104 @@ public class MinesweeperApp extends Application {
 		menuSceneDivider.setAlignment(Pos.CENTER);
 		
 		menuScene = new Scene(menuSceneDivider);
-		return menuScene;
+	}
+	
+	private void initializeGame(int height, int width, int numMines) {
+		
+		gameBackButton = new Button("Back");
+		gameBackButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				switchStageToScene(stage, menuScene);
+			}
+		});
+		
+		Separator gameSeparator = new Separator();
+		gameSeparator.setPadding(new Insets(10, 0, 10, 0));
+		
+		
+		// This code creates the top border of the game
+		HBox topBorder = new HBox();
+		topBorder.getChildren().add(new ImageView(new Image("textures/tlCorner_20x20.png")));
+		for (int i = 0; i < width; i++) {
+			topBorder.getChildren().add(new ImageView(new Image("textures/hBorder_32x20.png")));
+		}
+		topBorder.getChildren().add(new ImageView(new Image("textures/trCorner_20x20.png")));
+		
+		// This code creates the "menu bar," with the game button, timer, and mine count
+		VBox lMenuBorder = new VBox(new ImageView(new Image("textures/vBorder_20x32.png")),
+								    new ImageView(new Image("textures/vBorder_20x32.png")));
+		// to be fixed later
+		HBox mineCounterNumbers = new HBox();
+		mineCounterNumbers.getChildren().add(new ImageView(new Image("textures/timer9_26x46.png")));
+		mineCounterNumbers.getChildren().add(new ImageView(new Image("textures/timer9_26x46.png")));
+		mineCounterNumbers.getChildren().add(new ImageView(new Image("textures/timer9_26x46.png")));
+		mineCounterNumbers.setPadding(new Insets(8, 12, 10, 12));
+		Region menuBuffer1 = new Region();
+		Region menuBuffer2 = new Region();
+		HBox.setHgrow(menuBuffer1, Priority.ALWAYS);
+		HBox.setHgrow(menuBuffer2, Priority.ALWAYS);
+		
+		gameButton = new GameButton();
+		VBox gameButtonShell = new VBox(gameButton);
+		gameButtonShell.setPadding(new Insets(6, 0, 0, 0));
+		
+		HBox timerNumbers = new HBox();
+		timerNumbers.getChildren().add(new ImageView(new Image("textures/timer9_26x46.png")));
+		timerNumbers.getChildren().add(new ImageView(new Image("textures/timer9_26x46.png")));
+		timerNumbers.getChildren().add(new ImageView(new Image("textures/timer9_26x46.png")));
+		timerNumbers.setPadding(new Insets(8, 12, 10, 12));
+		
+		HBox gameMenuBar = new HBox(mineCounterNumbers, menuBuffer1, gameButtonShell, 
+								    menuBuffer2, timerNumbers);
+		gameMenuBar.setBackground(new Background(new BackgroundFill(Color.rgb(192, 192, 192), null, null)));
+		gameMenuBar.setPrefWidth(gameMenuBar.getWidth() + 32 * width);
+		VBox rMenuBorder = new VBox(new ImageView(new Image("textures/vBorder_20x32.png")),
+			    new ImageView(new Image("textures/vBorder_20x32.png")));
+		HBox menuRow = new HBox(lMenuBorder, gameMenuBar, rMenuBorder);
+		
+		// Middle dividing row
+		HBox middleBorder = new HBox();
+		middleBorder.getChildren().add(new ImageView(new Image("textures/mlCorner_20x20.png")));
+		for (int i = 0; i < width; i++) {
+			middleBorder.getChildren().add(new ImageView(new Image("textures/hBorder_32x20.png")));
+		}
+		middleBorder.getChildren().add(new ImageView(new Image("textures/mrCorner_20x20.png")));
+		
+		// game vertical borders
+		VBox lGameBorder = new VBox();
+		VBox rGameBorder = new VBox();
+		for (int i = 0; i < height; i++) {
+			lGameBorder.getChildren().add(new ImageView(new Image("textures/vBorder_20x32.png")));
+			rGameBorder.getChildren().add(new ImageView(new Image("textures/vBorder_20x32.png")));
+		}
+		
+		// game grid
+		GridPane gameGrid = new GridPane();
+		gridButtons = new GridButton[height][width];
+		for (int row = 0; row < height; row++) {
+			for (int col = 0; col < width; col++) {
+				gridButtons[row][col] = new GridButton();
+				gameGrid.add(gridButtons[row][col], col, row);
+			}
+		}
+		
+		// game HBox
+		HBox gameBox = new HBox(lGameBorder, gameGrid, rGameBorder);
+		
+		// bottom border
+		HBox bottomBorder = new HBox();
+		bottomBorder.getChildren().add(new ImageView(new Image("textures/blCorner_20x20.png")));
+		for (int i = 0; i < width; i++) {
+			bottomBorder.getChildren().add(new ImageView(new Image("textures/hBorder_32x20.png")));
+		}
+		bottomBorder.getChildren().add(new ImageView(new Image("textures/brCorner_20x20.png")));
+		
+		// gameLayout is the primary Node of the game scene
+		VBox gameLayout = new VBox(gameBackButton, gameSeparator, topBorder, menuRow, 
+								   middleBorder, gameBox, bottomBorder);
+		
+		gameScene = new Scene(gameLayout);
 	}
 	
 	public static void main(String[] args) {
