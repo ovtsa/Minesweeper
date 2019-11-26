@@ -16,6 +16,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
@@ -45,6 +46,8 @@ public class MinesweeperApp extends Application {
 	private Scene gameScene;
 	private Button gameBackButton;
 	private GameButton gameButton;
+	private NumberField mineCounterNumbers;
+	private NumberField timerNumbers;
 	private GridButton[][] gridButtons;
 	
 	@Override
@@ -203,7 +206,7 @@ public class MinesweeperApp extends Application {
 	}
 	
 	private void initializeGame(int height, int width, int numMines) {
-		
+		// This code creates the button to return to the menu scene
 		gameBackButton = new Button("Back");
 		gameBackButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -212,6 +215,7 @@ public class MinesweeperApp extends Application {
 			}
 		});
 		
+		// This separator divides the back button from the game GUI
 		Separator gameSeparator = new Separator();
 		gameSeparator.setPadding(new Insets(10, 0, 10, 0));
 		
@@ -227,11 +231,7 @@ public class MinesweeperApp extends Application {
 		// This code creates the "menu bar," with the game button, timer, and mine count
 		VBox lMenuBorder = new VBox(new ImageView(new Image("textures/vBorder_20x32.png")),
 								    new ImageView(new Image("textures/vBorder_20x32.png")));
-		// to be fixed later
-		HBox mineCounterNumbers = new HBox();
-		mineCounterNumbers.getChildren().add(new ImageView(new Image("textures/timer9_26x46.png")));
-		mineCounterNumbers.getChildren().add(new ImageView(new Image("textures/timer9_26x46.png")));
-		mineCounterNumbers.getChildren().add(new ImageView(new Image("textures/timer9_26x46.png")));
+		mineCounterNumbers = new NumberField(numMines);
 		mineCounterNumbers.setPadding(new Insets(8, 12, 10, 12));
 		Region menuBuffer1 = new Region();
 		Region menuBuffer2 = new Region();
@@ -239,16 +239,12 @@ public class MinesweeperApp extends Application {
 		HBox.setHgrow(menuBuffer2, Priority.ALWAYS);
 		
 		gameButton = new GameButton();
-		VBox gameButtonShell = new VBox(gameButton);
-		gameButtonShell.setPadding(new Insets(6, 0, 0, 0));
+		gameButton.setPadding(new Insets(6, 0, 0, 0));
 		
-		HBox timerNumbers = new HBox();
-		timerNumbers.getChildren().add(new ImageView(new Image("textures/timer9_26x46.png")));
-		timerNumbers.getChildren().add(new ImageView(new Image("textures/timer9_26x46.png")));
-		timerNumbers.getChildren().add(new ImageView(new Image("textures/timer9_26x46.png")));
+		timerNumbers = new NumberField(0);
 		timerNumbers.setPadding(new Insets(8, 12, 10, 12));
 		
-		HBox gameMenuBar = new HBox(mineCounterNumbers, menuBuffer1, gameButtonShell, 
+		HBox gameMenuBar = new HBox(mineCounterNumbers, menuBuffer1, gameButton, 
 								    menuBuffer2, timerNumbers);
 		gameMenuBar.setBackground(new Background(new BackgroundFill(Color.rgb(192, 192, 192), null, null)));
 		gameMenuBar.setPrefWidth(gameMenuBar.getWidth() + 32 * width);
@@ -298,9 +294,5 @@ public class MinesweeperApp extends Application {
 								   middleBorder, gameBox, bottomBorder);
 		
 		gameScene = new Scene(gameLayout);
-	}
-	
-	public static void main(String[] args) {
-		Application.launch(args);
 	}
 }

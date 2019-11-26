@@ -3,7 +3,10 @@ package gui;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.Parent;
 
 public class GridButton extends Parent {
@@ -15,20 +18,37 @@ public class GridButton extends Parent {
     public GridButton() {
         this.iv = new ImageView(UNKNOWN_IMAGE);
         this.getChildren().add(this.iv);
-
-        this.iv.setOnMousePressed(new EventHandler<MouseEvent>() {
+        
+        /*
+        this.iv.setOnDragDetected(new EventHandler<>() {
         		@Override
-            public void handle(MouseEvent evt) {
-                iv.setImage(CLICKING_IMAGE);
-            }
-
+        		public void handle(MouseEvent evt) {
+        			startDragAndDrop(TransferMode.ANY);
+        			iv.setImage(CLICKING_IMAGE);
+        			evt.consume();
+        		}
         });
 
+        this.iv.setOnDragEntered(new EventHandler<DragEvent>() {
+        		@Override
+        		public void handle(DragEvent evt) {
+        			iv.setImage(CLICKING_IMAGE);
+        		}
+        });
+        
+        this.iv.setOnDragExited(new EventHandler<DragEvent>() {
+        		@Override
+        		public void handle(DragEvent evt) {
+        			iv.setImage(UNKNOWN_IMAGE);
+        		}
+        });
+        */
+        
         // TODO fix this event
         this.iv.setOnMouseReleased(new EventHandler<MouseEvent>() {
         		@Override
         		public void handle(MouseEvent evt) {
-        			iv.setImage(UNKNOWN_IMAGE);
+        			iv.setImage(CLICKING_IMAGE);
         		}
         });
     } 

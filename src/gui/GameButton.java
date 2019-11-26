@@ -1,9 +1,11 @@
 package gui;
 
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.Parent;
 
 public class GameButton extends Parent {
@@ -11,10 +13,10 @@ public class GameButton extends Parent {
     private static final Image PRESSED_IMAGE = new Image("textures/gameButtonClicking_52x52.png");
 
     private final ImageView iv;
+    private final HBox buttonContainer;
 
     public GameButton() {
         this.iv = new ImageView(NORMAL_IMAGE);
-        this.getChildren().add(this.iv);
 
         this.iv.setOnMousePressed(new EventHandler<MouseEvent>() {
         		@Override
@@ -31,5 +33,12 @@ public class GameButton extends Parent {
         			iv.setImage(NORMAL_IMAGE);
         		}
         });
+        
+        this.buttonContainer = new HBox(this.iv);
+        this.getChildren().add(this.buttonContainer);
     } 
+    
+    public void setPadding(Insets insets) {
+    		buttonContainer.setPadding(insets);
+    }
 }
