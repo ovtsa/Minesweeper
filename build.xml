@@ -31,6 +31,7 @@
         <attribute name="Main-Class" value="controller.Controller"/>
 	  </manifest>
 	</jar>
+	<delete dir="${build}"/>
   </target>
 
   <target name="clean"
@@ -40,7 +41,8 @@
     <delete dir="${dist}"/>
   </target>
 
-  <target name="run" description="run program">
+  <target name="run" depends="dist"
+    description="run program">
     <java jar="${dist}/Minesweeper.jar" fork="true"/>
   </target>
 </project>
