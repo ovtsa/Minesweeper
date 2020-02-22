@@ -16,15 +16,21 @@
   <target name="compile" depends="init">
     <!-- compile code from ${src} into ${build} -->
 	<javac includeantruntime="false" srcdir="${src}" destdir="${build}"/>
+	<mkdir dir="${build}/textures"/>
+	<copy todir="${build}/textures">
+      <fileset dir="${src}/textures"/>
+	</copy>
   </target>
 
 
   <target name="dist" depends="compile"
       description="generate the distribution">
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist}/lib"/>
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <jar jarfile="${dist}/lib/MyProject-${DSTAMP}.jar" basedir="${build}"/>
+    <jar jarfile="${dist}/Minesweeper.jar" basedir="${build}">
+	  <manifest>
+        <attribute name="Main-Class" value="controller.Controller"/>
+	  </manifest>
+	</jar>
   </target>
 
   <target name="clean"
@@ -32,6 +38,10 @@
     <!-- Delete the ${build} and ${dist} directory trees -->
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
+  </target>
+
+  <target name="run" description="run program">
+    <java jar="${dist}/Minesweeper.jar" fork="true"/>
   </target>
 </project>
 
