@@ -108,6 +108,10 @@ public class GridButton extends Parent {
 				return GRIDBUTTON_IMAGES.get(img);
 		}
 
+		public void setOver(boolean b) {
+				gameOver = b;
+		}
+
 		public void giveGameButton(GameButton gb) {
 				gameButton = gb;
 		}

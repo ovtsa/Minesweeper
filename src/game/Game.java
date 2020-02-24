@@ -137,6 +137,7 @@ public class Game {
                 }
             }
         }
+        isWon();
     }
 
     // flags a GridButton
@@ -167,6 +168,21 @@ public class Game {
                 guiGridButtons[i][j].setImage("unknown");
             }
         }
+    }
+
+    private boolean isWon() {
+        // game is won if all squares that aren't mines are known
+        // search through board to find an unknown non-mine
+        for (int i = 0; i < guiGridButtons.length; i++) {
+            for (int j = 0; j < guiGridButtons[0].length; j++) {
+                if (!board.isKnown(i, j) && !board.isFlagged(i, j) && !board.isMine(i, j))
+                    return false;
+            }
+        }
+        guiGameButton.setImage("won");
+        guiGridButtons[0][0].setOver(true);
+        this.won = true;
+        return true;
     }
 
     private void die(int row, int col) {
