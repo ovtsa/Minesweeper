@@ -1,5 +1,6 @@
 package gui;
 
+import controller.Controller;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.image.Image;
@@ -14,9 +15,18 @@ public class GameButton extends Parent {
 
     private final ImageView iv;
     private final HBox buttonContainer;
+		private Controller controller;
 
-    public GameButton() {
+    public GameButton(Controller controller) {
+				if (this.controller == null) this.controller = controller;
         this.iv = new ImageView(NORMAL_IMAGE);
+
+				this.iv.setOnMouseClicked(new EventHandler<MouseEvent>() {
+						@Override
+						public void handle(MouseEvent evt) {
+								click();
+						}
+				});
 
         this.iv.setOnMousePressed(new EventHandler<MouseEvent>() {
         		@Override
@@ -33,12 +43,16 @@ public class GameButton extends Parent {
         			iv.setImage(NORMAL_IMAGE);
         		}
         });
-        
+
         this.buttonContainer = new HBox(this.iv);
         this.getChildren().add(this.buttonContainer);
-    } 
-    
+    }
+
     public void setPadding(Insets insets) {
     		buttonContainer.setPadding(insets);
     }
+
+		public void click() {
+				controller.gameButtonClick();
+		}
 }

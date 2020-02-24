@@ -13,9 +13,10 @@ After a successful build, this game comes in a packaged .jar file that can be mo
 There are four pieces of software you will need to compile and run this software on your own.
 
 1. A command line program, like cmd or terminal
-2. Git
+2. Git (min version undetermined as of 2/21/2020)
 3. JDK (min version undetermined as of 2/21/2020)
-4. Apache Ant
+4. JRE (min version undetermined as of 2/21/2020)
+5. Apache Ant
 
 ### Installing
 

@@ -1,4 +1,4 @@
-<project name="Minesweeper" default="dist" basedir=".">
+<project name="Minesweeper" default="make" basedir=".">
   <description>
     The build process for the Minesweeper application
   </description>
@@ -23,7 +23,7 @@
   </target>
 
 
-  <target name="dist" depends="compile"
+  <target name="make" depends="compile"
       description="generate the distribution">
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
     <jar jarfile="${dist}/Minesweeper.jar" basedir="${build}">
@@ -41,7 +41,7 @@
     <delete dir="${dist}"/>
   </target>
 
-  <target name="run" depends="dist"
+  <target name="run"
     description="run program">
     <java jar="${dist}/Minesweeper.jar" fork="true"/>
   </target>
