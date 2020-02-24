@@ -13,10 +13,12 @@ public class GameButton extends Parent {
 		private static final Image NORMAL_IMAGE = new Image("textures/gameButtonNormal_52x52.png");
     private static final Image PRESSED_IMAGE = new Image("textures/gameButtonClicking_52x52.png");
 		private static final Image DEAD_IMAGE = new Image("textures/gameButtonDead_52x52.png");
+		private static final Image CLICKING_IMAGE = new Image("textures/gameButtonMakingMove_52x52.png");
+		private static final Image WON_IMAGE = new Image("textures/gameButtonWon_52x52.png");
 
     private final ImageView iv;
     private final HBox buttonContainer;
-		private Controller controller;
+		private static Controller controller;
 
     public GameButton(Controller controller) {
 				if (this.controller == null) this.controller = controller;
@@ -64,6 +66,16 @@ public class GameButton extends Parent {
 								break;
 						case "dead":
 								this.iv.setImage(DEAD_IMAGE);
+								break;
+						case "clicking":
+								this.iv.setImage(CLICKING_IMAGE);
+								break;
+						case "won":
+								this.iv.setImage(WON_IMAGE);
+								break;
+						default:
+								this.iv.setImage(NORMAL_IMAGE);
+								break;
 				}
 		}
 

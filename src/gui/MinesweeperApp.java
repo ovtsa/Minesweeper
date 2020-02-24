@@ -283,6 +283,7 @@ public class MinesweeperApp extends Application {
 		this.controller = new Controller(height, width, numMines, gameButton, gridButtons);
 		gameButton.giveController(controller);
 		gridButtons[0][0].giveController(controller);
+		gridButtons[0][0].giveGameButton(gameButton);
 
 		// game HBox
 		HBox gameBox = new HBox(lGameBorder, gameGrid, rGameBorder);
