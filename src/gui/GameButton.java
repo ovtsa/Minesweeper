@@ -10,8 +10,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.Parent;
 
 public class GameButton extends Parent {
-	private static final Image NORMAL_IMAGE = new Image("textures/gameButtonNormal_52x52.png");
+		private static final Image NORMAL_IMAGE = new Image("textures/gameButtonNormal_52x52.png");
     private static final Image PRESSED_IMAGE = new Image("textures/gameButtonClicking_52x52.png");
+		private static final Image DEAD_IMAGE = new Image("textures/gameButtonDead_52x52.png");
 
     private final ImageView iv;
     private final HBox buttonContainer;
@@ -20,6 +21,7 @@ public class GameButton extends Parent {
     public GameButton(Controller controller) {
 				if (this.controller == null) this.controller = controller;
         this.iv = new ImageView(NORMAL_IMAGE);
+				Image baseImg = NORMAL_IMAGE;
 
 				this.iv.setOnMouseClicked(new EventHandler<MouseEvent>() {
 						@Override
@@ -52,7 +54,24 @@ public class GameButton extends Parent {
     		buttonContainer.setPadding(insets);
     }
 
+		public void setImage(String s) {
+				switch (s) {
+						case "normal":
+								this.iv.setImage(NORMAL_IMAGE);
+								break;
+						case "pressed":
+								this.iv.setImage(PRESSED_IMAGE);
+								break;
+						case "dead":
+								this.iv.setImage(DEAD_IMAGE);
+				}
+		}
+
 		public void click() {
 				controller.gameButtonClick();
+		}
+
+		public void giveController(Controller c) {
+				this.controller = c;
 		}
 }

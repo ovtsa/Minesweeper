@@ -53,7 +53,6 @@ public class MinesweeperApp extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		this.controller = new Controller();
 		initializeStage(primaryStage);
 		initializeMenu();
 
@@ -275,10 +274,15 @@ public class MinesweeperApp extends Application {
 		gridButtons = new GridButton[height][width];
 		for (int row = 0; row < height; row++) {
 			for (int col = 0; col < width; col++) {
-				gridButtons[row][col] = new GridButton(row, col, this.controller);
+				gridButtons[row][col] = new GridButton(row, col);
 				gameGrid.add(gridButtons[row][col], col, row);
 			}
 		}
+
+		// define this game's controller
+		this.controller = new Controller(height, width, numMines, gameButton, gridButtons);
+		gameButton.giveController(controller);
+		gridButtons[0][0].giveController(controller);
 
 		// game HBox
 		HBox gameBox = new HBox(lGameBorder, gameGrid, rGameBorder);

@@ -17,27 +17,30 @@ public class GridButton extends Parent {
 		/* GRIDBUTTON_IMAGES keys: "0"-"9", "unknown", "clicking",
 		   "mine", "mineDeath", "flagged", "flaggedWrong" */
 		private static final HashMap<String, Image> GRIDBUTTON_IMAGES = instantiateMap();
-		private static Controller controller;
+		private static Controller controller = null;
 
     private final ImageView iv;
 		private final int rowIndex;
 		private final int colIndex;
 		private boolean uncovered;
+		private boolean flagged;
+		private static boolean gameLost;
 
-    public GridButton(int rowIndex, int colIndex, Controller controller) {
-				if (this.controller == null) this.controller = controller;
+    public GridButton(int rowIndex, int colIndex) {
         this.iv = new ImageView(GRIDBUTTON_IMAGES.get("unknown"));
         this.getChildren().add(this.iv);
 				this.rowIndex = rowIndex;
 				this.colIndex = colIndex;
 				this.uncovered = false;
+				this.flagged = false;
+				gameLost = false;
 
 				// TODO: drag event handling
 				setOnMouseClicked(new EventHandler<MouseEvent>() {
 						@Override
 						public void handle(MouseEvent event) {
 								//System.out.printf("MouseClicked event at r%d c%d\n", rowIndex, colIndex);
-								click();
+								if (!uncovered && !flagged && !gameLost) click();
 								//iv.setImage(CLICKING_IMAGE);
 						}
 				});
@@ -46,7 +49,7 @@ public class GridButton extends Parent {
 						@Override
 						public void handle(MouseEvent event) {
 								//System.out.printf("MousePressed event at r%d c%d\n", rowIndex, colIndex);
-								iv.setImage(GRIDBUTTON_IMAGES.get("clicking"));
+								if (!uncovered && !flagged && !gameLost) iv.setImage(GRIDBUTTON_IMAGES.get("clicking"));
 						}
 				});
 
@@ -54,16 +57,35 @@ public class GridButton extends Parent {
 						@Override
 						public void handle(MouseEvent event) {
 								//System.out.printf("MouseReleased event at r%d c%d\n", rowIndex, colIndex);
-								iv.setImage(GRIDBUTTON_IMAGES.get("unknown"));
+								if (!uncovered && !flagged && !gameLost) iv.setImage(GRIDBUTTON_IMAGES.get("unknown"));
 						}
 				});
     }
 
 		public void click() {
 				int ret = controller.gridButtonClick(this.rowIndex, this.colIndex);
+				uncovered = true;
 		}
 
-		private static HashMap instantiateMap() {
+		public void setImage(String s) {
+				this.iv.setImage(GRIDBUTTON_IMAGES.get(s));
+		}
+
+		public void setStatus(boolean uncovered, boolean flagged, boolean gl) {
+				this.uncovered = uncovered;
+				this.flagged = flagged;
+				gameLost = gl;
+		}
+
+		public static Image getGridButtonImage(String img) {
+				return GRIDBUTTON_IMAGES.get(img);
+		}
+
+		public static void giveController(Controller c) {
+				controller = c;
+		}
+
+		private static HashMap<String, Image> instantiateMap() {
 				HashMap<String, Image> m = new HashMap<String, Image>();
 				m.put("0", new Image("textures/squareKnown0_32x32.png"));
 				m.put("1", new Image("textures/squareKnown1_32x32.png"));

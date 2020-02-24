@@ -3,9 +3,9 @@ package game;
 import java.util.Random;
 
 /** Board - an organization of 2D arrays that stores information regarding
- * the locations of mines, and the states of certain squares - 
+ * the locations of mines, and the states of certain squares -
  * visible, invisible, flagged, etc.
- * 
+ *
  * @author Nathan Jobe
  * @version %I%, %G%
  */
@@ -16,7 +16,7 @@ public class Board {
 	private static final int DEFAULT_NUM_MINES = 50;
 	// -1 is chosen to represent a MINE
 	private static final int MINE = -1;
-	
+
 	// each board location stores a value 0-8 for how many MINEs are around it
 	private int[][] board;
 	// each board location is either UNKNOWN, KNOWN, a revealed MINE, or you're DEAD
@@ -27,7 +27,7 @@ public class Board {
 	private Random rgn;
 	// Board needs to know if the player has clicked on a mine so it can show locations
 	private boolean hasDied;
-	
+
 	/** The default constructor creates a Board of size 20x20 with 50
 	 * randomly-placed MINEs, so 1/8 of the squares are MINEs, an easy game.
 	 */
@@ -37,14 +37,14 @@ public class Board {
 		this.rgn = new Random();
 		this.numMines = DEFAULT_NUM_MINES;
 		this.hasDied = false;
-		
+
 		this.initializeSquareStates();
 		this.placeMines();
 		this.fillNumbers();
 	}
-	
+
 	/** This constructor allows you to create a Board of a modified size.
-	 * 
+	 *
 	 * @param height is the number of rows on the board
 	 * @param width is the number of columns on the board
 	 * @param numMines is the number of mines the board should have
@@ -55,14 +55,14 @@ public class Board {
 		this.rgn = new Random();
 		this.numMines = numMines;
 		this.hasDied = false;
-		
+
 		this.initializeSquareStates();
 		this.placeMines();
 		this.fillNumbers();
 	}
-	
+
 	/** click - a sometimes recursive function that simulates a "click" on a square
-	 * 
+	 *
 	 * @param row is the row index to be clicked upon
 	 * @param col is the column index to  be clicked upon
 	 * @return the revealed SquareState of that square after clicking
@@ -72,7 +72,7 @@ public class Board {
 			// this block executes if you clicked on an unflagged mine
 			state[row][col] = SquareState.DEAD;
 			hasDied = true;
-		} else if (state[row][col] != SquareState.FLAGGED) { 
+		} else if (state[row][col] != SquareState.FLAGGED) {
 			// this block executes if you clicked on a safe square
 			state[row][col] = SquareState.KNOWN;
 			/* if this square had no surrounding mines, you know it's safe to click the
@@ -91,9 +91,9 @@ public class Board {
 		}
 		return state[row][col];
 	}
-	
+
 	/** flag - either places or removes a flag at location given
-	 * 
+	 *
 	 * @param row is the row index of the flag to add/remove
 	 * @param col is the column index of the flag to add/remove
 	 */
@@ -101,9 +101,9 @@ public class Board {
 		if (state[row][col] == SquareState.UNKNOWN) state[row][col] = SquareState.FLAGGED;
 		else if (state[row][col] == SquareState.FLAGGED) state[row][col] = SquareState.UNKNOWN;
 	}
-	
+
 	/** getStateAt - gets the state information about the square at location row, col
-	 * 
+	 *
 	 * @param row the row index to examine
 	 * @param col the col index to examine
 	 * @return the SquareState at location row, col
@@ -111,8 +111,12 @@ public class Board {
 	public SquareState getStateAt(int row, int col) {
 		return state[row][col];
 	}
-	
-	/** initializeSquareStates - sets all values in the state[][] array 
+
+	public boolean isMine(int row, int col) {
+		return this.board[row][col] == MINE;
+	}
+
+	/** initializeSquareStates - sets all values in the state[][] array
 	 *  to SquareState.UNKNOWN
 	 */
 	private void initializeSquareStates() {
@@ -122,7 +126,7 @@ public class Board {
 			}
 		}
 	}
-	
+
 	/** placeMines - places numMines mines randomly across the board.
 	 */
 	private void placeMines() {
@@ -137,8 +141,8 @@ public class Board {
 			}
 		}
 	}
-	
-	/** fillNumbers - given the locations of all MINEs on the board, 
+
+	/** fillNumbers - given the locations of all MINEs on the board,
 	 * fillNumbers calculates the numbers that should be in each square, and
 	 * places them there.
 	 */
@@ -158,10 +162,10 @@ public class Board {
 			}
 		}
 	}
-	
+
 	/** numMinesAround - a private method that calculates the number of mines
 	 * in surrounding squares.
-	 * 
+	 *
 	 * @param row - the row index whose surrounding squares will be checked
 	 * @param col - the column index whose surrounding squares will be checked
 	 * @return the number of MINEs found in surrounding squares
@@ -169,7 +173,7 @@ public class Board {
 	private int numMinesAround(int row, int col) {
 		assert row >= 0 && row < board.length &&
 			   col >= 0 && col < board[row].length;
-		
+
 		int sumSurroundingMines = 0;
 		// Since Java short-circuits, these won't cause ArrayIndexOutOfBoundsExceptions
 		// conditions below both refrain from checking out-of-bounds squares and
@@ -182,10 +186,10 @@ public class Board {
 		if (row + 1 < board.length && col - 1 >= 0 && board[row + 1][col - 1] == MINE) sumSurroundingMines++;
 		if (row + 1 < board.length && board[row + 1][col] == MINE) sumSurroundingMines++;
 		if (row + 1 < board.length && col + 1 < board[row].length && board[row + 1][col + 1] == MINE) sumSurroundingMines++;
-		
+
 		return sumSurroundingMines;
 	}
-	
+
 	/** reveal - sets the state at each location to SquareState.KNOWN
 	 */
 	public void reveal() {
@@ -195,7 +199,7 @@ public class Board {
 			}
 		}
 	}
-	
+
 	/** hide - sets the state at each location to SquareState.UNKNOWN
 	 */
 	public void hide() {
@@ -205,7 +209,7 @@ public class Board {
 			}
 		}
 	}
-	
+
 	/** revealMinesEndGame - after a player dies, this method can be used to
 	 * reveal all the mines that were left on the Board.
 	 */
@@ -219,20 +223,32 @@ public class Board {
 			}
 		}
 	}
-	
+
+	public int getHeight() {
+			return this.board.length;
+	}
+
+	public int getWidth() {
+			return this.board[0].length;
+	}
+
+	public int getNumMines() {
+			return this.numMines;
+	}
+
 	/** toString - creates a visual representation of a  Minesweeper Board.
-	 * 
+	 *
 	 * @return the Board in String form
 	 */
 	public String toString() {
 		// if player has died, mines should be revealed and compared to flags
 		if (hasDied) revealMinesEndGame();
-		
+
 		// Beginning with empty String
 		String stringRep = "\n     ";
-		
+
 		/* Corners should be pluses.
-		 * 
+		 *
 		 * All items placed horizontally are followed by a space, because
 		 * most terminal windows give more space between rows than columns
 		 * of text.
@@ -247,14 +263,14 @@ public class Board {
 		for (int i = 1; i <= board[0].length; i++) {
 			stringRep += Integer.toString(i % 10) + ' ';
 		}
-		
+
 		stringRep += '\n';
-		
+
 		stringRep += "   + ";
 		// horizontal borders are represented by dashes
 		for (int i = 0; i < board[0].length; i++) stringRep += "- ";
 		stringRep += "+\n";
-		
+
 		for (int i = 0; i < board.length; i++) {
 			if (i  + 1 < 10) stringRep += " " + Integer.toString(i + 1);
 			else stringRep += Integer.toString(i + 1);
@@ -285,7 +301,7 @@ public class Board {
 		stringRep += "   + ";
 		for (int i = 0; i < board[0].length; i++) stringRep += "- ";
 		stringRep += "+\n     ";
-		
+
 		for (int i = 1; i <= board[0].length; i++) {
 			if (i / 10 != 0) stringRep += Integer.toString(i / 10) + ' ';
 			else stringRep += "  ";
@@ -296,7 +312,7 @@ public class Board {
 			stringRep += Integer.toString(i % 10) + ' ';
 		}
 		stringRep += '\n';
-		
+
 		return stringRep;
 	}
 }

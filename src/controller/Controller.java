@@ -2,13 +2,16 @@ package controller;
 
 import game.Game;
 import gui.MinesweeperApp;
+import gui.GameButton;
+import gui.GridButton;
 import javafx.application.Application;
 
 public class Controller {
-		//Game game;
+		private Game game;
 
-		public Controller() {
-				//this.game = new Game();
+		public Controller(int height, int width, int numMines,
+											GameButton guiGameButton, GridButton[][] guiGridButtons) {
+				this.game = new Game(height, width, numMines, guiGameButton, guiGridButtons);
 		}
 
 		/** A translator function from gui to game of a click on a gridbutton
@@ -19,11 +22,13 @@ public class Controller {
 		 */
 		public int gridButtonClick(int row, int col) {
 				System.out.printf("Controller.gridButtonClick(%d, %d)\n", row, col);
+				game.click(row, col);
 				return 0;
 		}
 
 		public int gameButtonClick() {
 				System.out.printf("Controller.gameButtonClick()\n");
+				game.reset();
 				return 0;
 		}
 

@@ -2,7 +2,7 @@
   <description>
     The build process for the Minesweeper application
   </description>
-  
+
   <!-- global properties -->
   <property name="src" location="src"/>
   <property name="build" location="build"/>
@@ -15,7 +15,9 @@
 
   <target name="compile" depends="init">
     <!-- compile code from ${src} into ${build} -->
-	<javac includeantruntime="false" srcdir="${src}" destdir="${build}"/>
+	<javac includeantruntime="false" srcdir="${src}" destdir="${build}">
+    <compilerarg value="-Xlint:unchecked" />
+  </javac>
 	<mkdir dir="${build}/textures"/>
 	<copy todir="${build}/textures">
       <fileset dir="${src}/textures"/>
@@ -46,4 +48,3 @@
     <java jar="${dist}/Minesweeper.jar" fork="true"/>
   </target>
 </project>
-
