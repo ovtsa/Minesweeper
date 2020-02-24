@@ -28,6 +28,19 @@ public class Game {
         }
     }
 
+    // flags a GridButton
+    public void flag(int row, int col) {
+        System.out.printf("Game flagging r%d c%d\n", row, col);
+        guiGridButtons[row][col].setStatus(false, true, false);
+        guiGridButtons[row][col].setImage("flagged");
+    }
+
+    public void unflag(int row, int col) {
+        System.out.printf("Game unflagging r%d c%d\n", row, col);
+        guiGridButtons[row][col].setStatus(false, false, false);
+        guiGridButtons[row][col].setImage("unknown");
+    }
+
     public void reset() {
         this.board = new Board(board.getHeight(), board.getWidth(), board.getNumMines());
         this.won = false;

@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
@@ -41,7 +42,16 @@ public class GridButton extends Parent {
 						@Override
 						public void handle(MouseEvent event) {
 								//System.out.printf("MouseClicked event at r%d c%d\n", rowIndex, colIndex);
-								if (!uncovered && !flagged && !gameOver) click();
+								if (event.getButton() == MouseButton.PRIMARY &&
+										!uncovered && !flagged && !gameOver) {
+												click();
+								} else if (event.getButton() == MouseButton.SECONDARY &&
+										!uncovered && !flagged && !gameOver) {
+												flag();
+								} else if (event.getButton() == MouseButton.SECONDARY &&
+										!uncovered && flagged && !gameOver) {
+												unflag();
+								}
 								//iv.setImage(CLICKING_IMAGE);
 						}
 				});
@@ -50,7 +60,8 @@ public class GridButton extends Parent {
 						@Override
 						public void handle(MouseEvent event) {
 								//System.out.printf("MousePressed event at r%d c%d\n", rowIndex, colIndex);
-								if (!uncovered && !flagged && !gameOver) {
+								if (!uncovered && !flagged && !gameOver &&
+										event.getButton() == MouseButton.PRIMARY) {
 										iv.setImage(GRIDBUTTON_IMAGES.get("clicking"));
 										gameButton.setImage("clicking");
 								}
@@ -61,7 +72,8 @@ public class GridButton extends Parent {
 						@Override
 						public void handle(MouseEvent event) {
 								//System.out.printf("MouseReleased event at r%d c%d\n", rowIndex, colIndex);
-								if (!uncovered && !flagged && !gameOver) {
+								if (!uncovered && !flagged && !gameOver &&
+										event.getButton() == MouseButton.PRIMARY) {
 										iv.setImage(GRIDBUTTON_IMAGES.get("unknown"));
 										gameButton.setImage("normal");
 								}
@@ -72,6 +84,14 @@ public class GridButton extends Parent {
 		public void click() {
 				int ret = controller.gridButtonClick(this.rowIndex, this.colIndex);
 				uncovered = true;
+		}
+
+		public void flag() {
+				controller.flag(rowIndex, colIndex);
+		}
+
+		public void unflag() {
+				controller.unflag(rowIndex, colIndex);
 		}
 
 		public void setImage(String s) {

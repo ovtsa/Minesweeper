@@ -26,6 +26,14 @@ public class Controller {
 				return 0;
 		}
 
+		public void flag(int row, int col) {
+				game.flag(row, col);
+		}
+
+		public void unflag(int row, int col) {
+				game.unflag(row, col);
+		}
+
 		public int gameButtonClick() {
 				System.out.printf("Controller.gameButtonClick()\n");
 				game.reset();
