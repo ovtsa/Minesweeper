@@ -2,19 +2,23 @@ package game;
 
 import gui.GameButton;
 import gui.GridButton;
+import gui.NumberField;
 
 public class Game {
     private GameButton guiGameButton;
     private GridButton[][] guiGridButtons;
+    private NumberField guiMineCounterNumbers;
     private Board board;
     private boolean won;
     private boolean lost;
 
     public Game(int height, int width, int numMines,
-                GameButton guiGameButton, GridButton[][] guiGridButtons) {
+                GameButton guiGameButton, GridButton[][] guiGridButtons,
+                NumberField guiMineCounterNumbers) {
         this.board = new Board(height, width, numMines);
         this.guiGameButton = guiGameButton;
         this.guiGridButtons = guiGridButtons;
+        this.guiMineCounterNumbers = guiMineCounterNumbers;
         this.won = false;
         this.lost = false;
     }
@@ -33,12 +37,14 @@ public class Game {
         System.out.printf("Game flagging r%d c%d\n", row, col);
         guiGridButtons[row][col].setStatus(false, true, false);
         guiGridButtons[row][col].setImage("flagged");
+        guiMineCounterNumbers.setNumber(guiMineCounterNumbers.getValue() - 1);
     }
 
     public void unflag(int row, int col) {
         System.out.printf("Game unflagging r%d c%d\n", row, col);
         guiGridButtons[row][col].setStatus(false, false, false);
         guiGridButtons[row][col].setImage("unknown");
+        guiMineCounterNumbers.setNumber(guiMineCounterNumbers.getValue() + 1);
     }
 
     public void reset() {

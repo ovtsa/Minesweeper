@@ -20,14 +20,17 @@ public class NumberField extends Parent {
 		new Image("textures/timer9_26x46.png"),
 		new Image("textures/timerNeg_26x46.png")
 	};
-	
+
 	private final ImageView hundreds;
 	private final ImageView tens;
 	private final ImageView ones;
-	
+
 	private final HBox imagesHbox;
-	
+
+	private int value;
+
 	public NumberField(int value) {
+		this.value = value;
 		if (value >= 0) {
 			// value is positive
 			this.hundreds = new ImageView(NUMBER_IMAGES[(value % 1000) / 100]);
@@ -39,17 +42,18 @@ public class NumberField extends Parent {
 			this.tens = new ImageView(NUMBER_IMAGES[-1 * (value % 100) / 10]);
 			this.ones = new ImageView(NUMBER_IMAGES[-1 * value % 10]);
 		}
-		
+
 		imagesHbox = new HBox(hundreds, tens, ones);
-		
+
 		this.getChildren().add(imagesHbox);
 	}
-	
+
 	public void setPadding(Insets insets) {
 		imagesHbox.setPadding(insets);
 	}
-	
+
 	public void setNumber(int value) {
+		this.value = value;
 		if (value >= 0) {
 			hundreds.setImage(NUMBER_IMAGES[(value % 1000) / 100]);
 			tens.setImage(NUMBER_IMAGES[(value % 100) / 10]);
@@ -59,5 +63,9 @@ public class NumberField extends Parent {
 			tens.setImage(NUMBER_IMAGES[-1 * (value % 100) / 10]);
 			ones.setImage(NUMBER_IMAGES[-1 * value % 10]);
 		}
+	}
+
+	public int getValue() {
+			return this.value;
 	}
 }

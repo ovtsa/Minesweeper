@@ -4,14 +4,17 @@ import game.Game;
 import gui.MinesweeperApp;
 import gui.GameButton;
 import gui.GridButton;
+import gui.NumberField;
 import javafx.application.Application;
 
 public class Controller {
 		private Game game;
 
 		public Controller(int height, int width, int numMines,
-											GameButton guiGameButton, GridButton[][] guiGridButtons) {
-				this.game = new Game(height, width, numMines, guiGameButton, guiGridButtons);
+											GameButton guiGameButton, GridButton[][] guiGridButtons,
+											NumberField mineCounterNumbers) {
+				this.game = new Game(height, width, numMines, guiGameButton, guiGridButtons,
+														 mineCounterNumbers);
 		}
 
 		/** A translator function from gui to game of a click on a gridbutton
