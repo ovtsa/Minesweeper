@@ -67,6 +67,7 @@ public class Board {
 	 * @param col is the column index to  be clicked upon
 	 * @return the revealed SquareState of that square after clicking
 	 */
+
 	public SquareState click(int row, int col) {
 		if (board[row][col] == MINE && state[row][col] != SquareState.FLAGGED) {
 			// this block executes if you clicked on an unflagged mine
@@ -92,6 +93,10 @@ public class Board {
 		return state[row][col];
 	}
 
+	public int getValueAt(int row, int col) {
+			return board[row][col];
+	}
+
 	/** flag - either places or removes a flag at location given
 	 *
 	 * @param row is the row index of the flag to add/remove
@@ -112,8 +117,20 @@ public class Board {
 		return state[row][col];
 	}
 
+	public void setClicked(int row, int col) {
+			state[row][col] = SquareState.KNOWN;
+	}
+
 	public boolean isMine(int row, int col) {
 		return this.board[row][col] == MINE;
+	}
+
+	public boolean isFlagged(int row, int col) {
+		return this.state[row][col] == SquareState.FLAGGED;
+	}
+
+	public boolean isKnown(int row, int col) {
+		return this.state[row][col] == SquareState.KNOWN;
 	}
 
 	/** initializeSquareStates - sets all values in the state[][] array
