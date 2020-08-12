@@ -26,7 +26,8 @@ public class TimerThread implements Runnable {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) { System.out.println(e); }
-            if (isRunning) this.numField.setNumber(this.numField.getValue() + 1);
+            if (isRunning && this.numField.getValue() < 999)
+                this.numField.setNumber(this.numField.getValue() + 1);
         }
     }
 

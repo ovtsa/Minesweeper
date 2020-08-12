@@ -19,7 +19,7 @@ public class Board {
 
 	// each board location stores a value 0-8 for how many MINEs are around it
 	private int[][] board;
-	// each board location is either UNKNOWN, KNOWN, a revealed MINE, or you're DEAD
+	// each board location is either UNKNOWN, KNOWN, FLAGGED, or you're DEAD
 	private SquareState[][] state;
 	// Any board will have a set number of MINEs related to the difficulty of the game
 	private int numMines;

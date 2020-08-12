@@ -191,9 +191,16 @@ public class Game {
                     return false;
             }
         }
+        timer.stopRunning();
         guiGameButton.setImage("won");
-        guiGridButtons[0][0].setOver(true);
+        GridButton.setOver(true);
         this.won = true;
+        for (int i = 0; i < guiGridButtons.length; i++) {
+            for (int j = 0; j < guiGridButtons[0].length; j++) {
+                if (!board.isKnown(i, j) && !board.isFlagged(i, j))
+                    guiGridButtons[i][j].flag();
+            }
+        }
         return true;
     }
 
