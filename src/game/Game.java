@@ -8,19 +8,27 @@ public class Game {
     private GameButton guiGameButton;
     private GridButton[][] guiGridButtons;
     private NumberField guiMineCounterNumbers;
+    private NumberField guiTimerNumbers;
     private Board board;
     private boolean won;
     private boolean lost;
+    private TimerThread timer;
 
     public Game(int height, int width, int numMines,
                 GameButton guiGameButton, GridButton[][] guiGridButtons,
-                NumberField guiMineCounterNumbers) {
+                NumberField guiTimerNumbers, NumberField guiMineCounterNumbers) {
         this.board = new Board(height, width, numMines);
         this.guiGameButton = guiGameButton;
         this.guiGridButtons = guiGridButtons;
+        this.guiTimerNumbers = guiTimerNumbers;
         this.guiMineCounterNumbers = guiMineCounterNumbers;
         this.won = false;
         this.lost = false;
+        this.timer = new TimerThread(this.guiTimerNumbers);
+    }
+
+    public void startTimerThread() {
+        timer.start();
     }
 
     public void click(int row, int col) {
@@ -160,6 +168,9 @@ public class Game {
     public void reset() {
         this.board = new Board(board.getHeight(), board.getWidth(), board.getNumMines());
         this.guiMineCounterNumbers.setNumber(board.getNumMines());
+        this.timer.stopRunning();
+        this.guiTimerNumbers.setNumber(0);
+        this.timer = new TimerThread(this.guiTimerNumbers);
         this.won = false;
         this.lost = false;
         for (int i = 0; i < guiGridButtons.length; i++) {
@@ -168,6 +179,7 @@ public class Game {
                 guiGridButtons[i][j].setImage("unknown");
             }
         }
+        GridButton.setFirstClick(true);
     }
 
     private boolean isWon() {
@@ -186,6 +198,7 @@ public class Game {
     }
 
     private void die(int row, int col) {
+        timer.stopRunning();
         guiGridButtons[row][col].setImage("mineDeath");
         guiGridButtons[row][col].setStatus(true, false, true);
         guiGameButton.setImage("dead");

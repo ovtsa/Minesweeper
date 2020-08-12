@@ -12,9 +12,9 @@ public class Controller {
 
 		public Controller(int height, int width, int numMines,
 											GameButton guiGameButton, GridButton[][] guiGridButtons,
-											NumberField mineCounterNumbers) {
+											NumberField guiTimerNumbers, NumberField mineCounterNumbers) {
 				this.game = new Game(height, width, numMines, guiGameButton, guiGridButtons,
-														 mineCounterNumbers);
+														 guiTimerNumbers, mineCounterNumbers);
 		}
 
 		/** A translator function from gui to game of a click on a gridbutton
@@ -41,6 +41,10 @@ public class Controller {
 				System.out.printf("Controller.gameButtonClick()\n");
 				game.reset();
 				return 0;
+		}
+
+		public void startTimerThread() {
+			  game.startTimerThread();
 		}
 
 		public static void main(String[] args) {

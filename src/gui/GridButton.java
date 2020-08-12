@@ -21,6 +21,7 @@ public class GridButton extends Parent {
 		private static Controller controller = null;
 		private static GameButton gameButton = null;
 		private static boolean gameOver = false;
+		private static boolean firstClick = true;
 
     private final ImageView iv;
 		private final int rowIndex;
@@ -82,6 +83,12 @@ public class GridButton extends Parent {
     }
 
 		public void click() {
+			  if (firstClick) {
+					  // start timer thread
+						firstClick = false;
+						System.out.println("First click done");
+						controller.startTimerThread();
+				}
 				int ret = controller.gridButtonClick(this.rowIndex, this.colIndex);
 				uncovered = true;
 		}
@@ -108,8 +115,12 @@ public class GridButton extends Parent {
 				return GRIDBUTTON_IMAGES.get(img);
 		}
 
-		public void setOver(boolean b) {
+		public static void setOver(boolean b) {
 				gameOver = b;
+		}
+
+		public static void setFirstClick(boolean b) {
+			  firstClick = b;
 		}
 
 		public void giveGameButton(GameButton gb) {

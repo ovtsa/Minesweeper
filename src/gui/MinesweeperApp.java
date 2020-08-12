@@ -281,7 +281,7 @@ public class MinesweeperApp extends Application {
 
 		// define this game's controller
 		this.controller = new Controller(height, width, numMines, gameButton, gridButtons,
-																		 mineCounterNumbers);
+																		 timerNumbers, mineCounterNumbers);
 		gameButton.giveController(controller);
 		gridButtons[0][0].giveController(controller);
 		gridButtons[0][0].giveGameButton(gameButton);
